@@ -279,10 +279,10 @@ function setupTimer(){
 const difficulty=document.getElementById("difficulty").value;
 const p=playerCount.value;
 
-let baseTime=30;
+let baseTime=70;
 
-if(difficulty==="medium") baseTime=60;
-if(difficulty==="hard") baseTime=90;
+if(difficulty==="medium") baseTime=160;
+if(difficulty==="hard") baseTime=290;
 
 timeLeft=baseTime+(p*20);
 
@@ -424,4 +424,5 @@ startGame();
 
 </body>
 </html>
+
 
