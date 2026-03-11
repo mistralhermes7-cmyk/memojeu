@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Memory NSI</title>
+
+<style>
+
+body{
+font-family:Arial;
+background:linear-gradient(135deg,#141e30,#243b55);
+color:white;
+text-align:center;
+}
+
+.memory{
+display:grid;
+grid-template-columns:repeat(6,120px);
+gap:15px;
+justify-content:center;
+margin-top:40px;
+}
+
+.card{
+width:120px;
+height:120px;
+perspective:1000px;
+cursor:pointer;
+}
+
+.inner{
+width:100%;
+height:100%;
+position:relative;
+transform-style:preserve-3d;
+transition:0.6s;
+}
+
+.card.flipped .inner{
+transform:rotateY(180deg);
+}
+
+.front,.back{
+position:absolute;
+width:100%;
+height:100%;
+border-radius:10px;
+backface-visibility:hidden;
+}
+
+.front{
+background:#00ffe0;
+}
+
+.back{
+transform:rotateY(180deg);
+}
+
+.back img{
+width:100%;
+height:100%;
+object-fit:cover;
+border-radius:10px;
+}
+
+button{
+margin:20px;
+padding:10px 20px;
+border:none;
+border-radius:10px;
+background:#00ffe0;
+font-weight:bold;
+cursor:pointer;
+}
+
+#scoreboard{
+margin-top:20px;
+font-size:18px;
+}
+
+#playerTurn{
+color:#00ffe0;
+font-weight:bold;
+}
+
+input{
+padding:8px;
+margin:5px;
+border-radius:6px;
+border:none;
+}
+
+</style>
+</head>
+
+<body>
+
+<h1>Memory NSI</h1>
+
+<div id="setup">
+
+<p>Nombre de joueurs (2 à 4)</p>
+
+<select id="playerCount">
+<option value="2">2</option>
+<option value="3">3</option>
+<option value="4">4</option>
+</select>
+
+<div id="nameInputs"></div>
+
+<button onclick="startGame()">Commencer</button>
+
+</div>
+
+<div id="scoreboard"></div>
+
+<div class="memory" id="memory"></div>
+
+<button onclick="restartGame()">Recommencer</button>
+
+<div id="message"></div>
+
+<audio id="winSound" src="fahhh.mp3"></audio>
+
+<script>
+
+const images=[
+"quentin.jpg","mathis.jpg","dimitri.jpg","alari.jpg","antoine.jpg",
+"akoan.jpg","cesar.jpg","ethan.jpg","kirk.png","marty.jpg",
+"jules.jpg","adrien.jpg","pal.png","aurel.jpg","nathan.jpg","flight.png","nathan2.jpg","alari2.jpg","marty2.jpg","simon.jpg","simon2.jpg","elio.jpg","ethan2.jpg","moi.jpg"
+];
+
+let players=[];
+let scores=[];
+let currentPlayer=0;
+
+let firstCard=null;
+let secondCard=null;
+let lock=false;
+let matches=0;
+
+const nameInputs=document.getElementById("nameInputs");
+const playerCount=document.getElementById("playerCount");
+
+function createInputs(){
+
+nameInputs.innerHTML="";
+
+for(let i=1;i<=playerCount.value;i++){
+
+nameInputs.innerHTML+=`
+<p>Joueur ${i} :
+<input id="player${i}" placeholder="Pseudo">
+</p>
+`;
+
+}
+
+}
+
+playerCount.addEventListener("change",createInputs);
+
+createInputs();
+
+function startGame(){
+
+players=[];
+scores=[];
+
+for(let i=1;i<=playerCount.value;i++){
+
+let name=document.getElementById("player"+i).value;
+
+if(name==="") name="Joueur "+i;
+
+players.push(name);
+scores.push(0);
+
+}
+
+currentPlayer=0;
+
+updateScoreboard();
+
+document.getElementById("memory").innerHTML="";
+document.getElementById("message").textContent="";
+
+let cards=[...images,...images];
+
+cards.sort(()=>0.5-Math.random());
+
+cards.forEach(src=>{
+
+const card=document.createElement("div");
+card.classList.add("card");
+
+card.innerHTML=`
+<div class="inner">
+<div class="front"></div>
+<div class="back">
+<img src="${src}">
+</div>
+</div>
+`;
+
+card.addEventListener("click",()=>clickCard(card));
+
+memory.appendChild(card);
+
+});
+
+}
+
+function clickCard(card){
+
+if(lock||card.classList.contains("flipped")) return;
+
+card.classList.add("flipped");
+
+if(!firstCard){
+
+firstCard=card;
+
+}else{
+
+secondCard=card;
+
+lock=true;
+
+let img1=firstCard.querySelector("img").src;
+let img2=secondCard.querySelector("img").src;
+
+if(img1===img2){
+
+document.getElementById("winSound").play();
+
+scores[currentPlayer]++;
+
+matches++;
+
+updateScoreboard();
+
+firstCard=null;
+secondCard=null;
+lock=false;
+
+if(matches===images.length){
+
+showWinner();
+
+}
+
+}else{
+
+setTimeout(()=>{
+
+firstCard.classList.remove("flipped");
+secondCard.classList.remove("flipped");
+
+firstCard=null;
+secondCard=null;
+lock=false;
+
+currentPlayer++;
+
+if(currentPlayer>=players.length) currentPlayer=0;
+
+updateScoreboard();
+
+},1000);
+
+}
+
+}
+
+}
+
+function updateScoreboard(){
+
+let html=`<p>Tour : <span id="playerTurn">${players[currentPlayer]}</span></p>`;
+
+players.forEach((p,i)=>{
+
+html+=`<p>${p} : ${scores[i]}</p>`;
+
+});
+
+document.getElementById("scoreboard").innerHTML=html;
+
+}
+
+function showWinner(){
+
+let max=Math.max(...scores);
+
+let winners=[];
+
+scores.forEach((s,i)=>{
+
+if(s===max) winners.push(players[i]);
+
+});
+
+document.getElementById("message").textContent="🏆 Gagnant : "+winners.join(", ");
+
+}
+
+function restartGame(){
+
+matches=0;
+startGame();
+
+}
+
+</script>
+
+</body>
+</html>
