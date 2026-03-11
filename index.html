@@ -147,8 +147,6 @@ font-size:20px;
 
 <button onclick="restartGame()">Recommencer</button>
 
-<audio id="winSound" src="fahhh.mp3"></audio>
-
 <div id="endScreen">
 <div id="endMessage"></div>
 <button onclick="restartGame()">Rejouer</button>
@@ -163,6 +161,24 @@ const allImages=[
 "flight.png","nathan2.jpg","alari2.jpg","marty2.jpg","simon.jpg",
 "simon2.jpg","elio.jpg","ethan2.jpg","moi.jpg"
 ];
+
+/* SONS ALEATOIRES */
+
+const sounds=[
+"SONS/son1.mp3",
+"SONS/son2.mp3",
+"SONS/son3.mp3",
+"SONS/son4.mp3",
+"SONS/son5.mp3"
+];
+
+function playRandomSound(){
+
+const random=Math.floor(Math.random()*sounds.length);
+const audio=new Audio(sounds[random]);
+audio.play();
+
+}
 
 let images=[];
 let players=[];
@@ -331,7 +347,7 @@ let img2=secondCard.querySelector("img").src;
 
 if(img1===img2){
 
-document.getElementById("winSound").play();
+playRandomSound();
 
 scores[currentPlayer]++;
 matches++;
@@ -424,6 +440,3 @@ startGame();
 
 </body>
 </html>
-
-
-
