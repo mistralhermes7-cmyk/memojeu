@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>Memory NSI</title>
- 
+
 <style>
 
 body{
@@ -15,7 +15,7 @@ text-align:center;
 
 .memory{
 display:grid;
-grid-template-columns:repeat(6,120px);
+grid-template-columns:repeat(auto-fit,120px);
 gap:15px;
 justify-content:center;
 margin-top:40px;
@@ -83,7 +83,7 @@ color:#00ffe0;
 font-weight:bold;
 }
 
-input{
+input,select{
 padding:8px;
 margin:5px;
 border-radius:6px;
@@ -99,12 +99,21 @@ border:none;
 
 <div id="setup">
 
-<p>Nombre de joueurs (2 à 4)</p>
+<p>Nombre de joueurs</p>
 
 <select id="playerCount">
+<option value="1">1</option>
 <option value="2">2</option>
 <option value="3">3</option>
 <option value="4">4</option>
+</select>
+
+<p>Difficulté</p>
+
+<select id="difficulty">
+<option value="easy">Facile</option>
+<option value="medium">Moyen</option>
+<option value="hard">Difficile</option>
 </select>
 
 <div id="nameInputs"></div>
@@ -125,11 +134,13 @@ border:none;
 
 <script>
 
-const images=[
+const allimages=[
 "quentin.jpg","mathis.jpg","dimitri.jpg","alari.jpg","antoine.jpg",
 "akoan.jpg","cesar.jpg","ethan.jpg","kirk.png","marty.jpg",
 "jules.jpg","adrien.jpg","pal.png","aurel.jpg","nathan.jpg","flight.png","nathan2.jpg","alari2.jpg","marty2.jpg","simon.jpg","simon2.jpg","elio.jpg","ethan2.jpg","moi.jpg"
 ];
+
+let images=[];
 
 let players=[];
 let scores=[];
@@ -140,8 +151,8 @@ let secondCard=null;
 let lock=false;
 let matches=0;
 
-const nameInputs=document.getElementById("nameInputs");
 const playerCount=document.getElementById("playerCount");
+const nameInputs=document.getElementById("nameInputs");
 
 function createInputs(){
 
@@ -165,6 +176,12 @@ createInputs();
 
 function startGame(){
 
+const difficulty=document.getElementById("difficulty").value;
+
+if(difficulty==="easy") images=allImages.slice(0,6);
+if(difficulty==="medium") images=allImages.slice(0,10);
+if(difficulty==="hard") images=allImages.slice(0,15);
+
 players=[];
 scores=[];
 
@@ -180,6 +197,7 @@ scores.push(0);
 }
 
 currentPlayer=0;
+matches=0;
 
 updateScoreboard();
 
@@ -199,7 +217,7 @@ card.innerHTML=`
 <div class="inner">
 <div class="front"></div>
 <div class="back">
-<img src="MEMORY/${src}">
+<img src="${src}">
 </div>
 </div>
 `;
@@ -225,7 +243,6 @@ firstCard=card;
 }else{
 
 secondCard=card;
-
 lock=true;
 
 let img1=firstCard.querySelector("img").src;
@@ -236,7 +253,6 @@ if(img1===img2){
 document.getElementById("winSound").play();
 
 scores[currentPlayer]++;
-
 matches++;
 
 updateScoreboard();
@@ -262,11 +278,15 @@ firstCard=null;
 secondCard=null;
 lock=false;
 
+if(players.length>1){
+
 currentPlayer++;
 
 if(currentPlayer>=players.length) currentPlayer=0;
 
 updateScoreboard();
+
+}
 
 },1000);
 
@@ -308,7 +328,6 @@ document.getElementById("message").textContent="🏆 Gagnant : "+winners.join(",
 
 function restartGame(){
 
-matches=0;
 startGame();
 
 }
@@ -316,6 +335,4 @@ startGame();
 </script>
 
 </body>
-
 </html>
-
