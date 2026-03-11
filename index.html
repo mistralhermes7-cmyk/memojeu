@@ -134,12 +134,14 @@ border:none;
 
 <script>
 
-const allimages=[
+const allImages=[
 "quentin.jpg","mathis.jpg","dimitri.jpg","alari.jpg","antoine.jpg",
 "akoan.jpg","cesar.jpg","ethan.jpg","kirk.png","marty.jpg",
-"jules.jpg","adrien.jpg","pal.png","aurel.jpg","nathan.jpg","flight.png","nathan2.jpg","alari2.jpg","marty2.jpg","simon.jpg","simon2.jpg","elio.jpg","ethan2.jpg","moi.jpg"
+"jules.jpg","adrien.jpg","pal.png","aurel.jpg","nathan.jpg",
+"flight.png","nathan2.jpg","alari2.jpg","marty2.jpg","simon.jpg",
+"simon2.jpg","elio.jpg","ethan2.jpg","moi.jpg"
 ];
-  
+
 let images=[];
 
 let players=[];
@@ -178,11 +180,18 @@ function startGame(){
 
 const memory=document.getElementById("memory");
 
+memory.innerHTML="";
+
+firstCard=null;
+secondCard=null;
+lock=false;
+matches=0;
+
 const difficulty=document.getElementById("difficulty").value;
 
 if(difficulty==="easy") images=allImages.slice(0,6);
 if(difficulty==="medium") images=allImages.slice(0,10);
-if(difficulty==="hard") images=allImages.slice(0,15);
+if(difficulty==="hard") images=allImages.slice(0,12);
 
 players=[];
 scores=[];
@@ -199,16 +208,12 @@ scores.push(0);
 }
 
 currentPlayer=0;
-matches=0;
 
 updateScoreboard();
 
-memory.innerHTML="";
-document.getElementById("message").textContent="";
-
 let cards=[...images,...images];
 
-cards.sort(()=>0.5-Math.random());
+cards.sort(()=>Math.random()-0.5);
 
 cards.forEach(src=>{
 
@@ -241,8 +246,9 @@ card.classList.add("flipped");
 if(!firstCard){
 
 firstCard=card;
+return;
 
-}else{
+}
 
 secondCard=card;
 lock=true;
@@ -296,8 +302,6 @@ updateScoreboard();
 
 }
 
-}
-
 function updateScoreboard(){
 
 let html=`<p>Tour : <span id="playerTurn">${players[currentPlayer]}</span></p>`;
@@ -338,3 +342,4 @@ startGame();
 
 </body>
 </html>
+
