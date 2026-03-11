@@ -85,6 +85,25 @@ font-size:20px;
 margin-top:10px;
 }
 
+#endScreen{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,0.85);
+display:none;
+align-items:center;
+justify-content:center;
+flex-direction:column;
+font-size:30px;
+z-index:10;
+}
+
+#endScreen button{
+font-size:20px;
+}
+
 </style>
 </head>
 
@@ -128,9 +147,12 @@ margin-top:10px;
 
 <button onclick="restartGame()">Recommencer</button>
 
-<div id="message"></div>
-
 <audio id="winSound" src="fahhh.mp3"></audio>
+
+<div id="endScreen">
+<div id="endMessage"></div>
+<button onclick="restartGame()">Rejouer</button>
+</div>
 
 <script>
 
@@ -157,6 +179,8 @@ let moves=0;
 let timer;
 let timeLeft=0;
 
+let gameOver=false;
+
 const playerCount=document.getElementById("playerCount");
 const nameInputs=document.getElementById("nameInputs");
 
@@ -177,13 +201,15 @@ nameInputs.innerHTML+=`
 }
 
 playerCount.addEventListener("change",createInputs);
-
 createInputs();
 
 function startGame(){
 
-const memory=document.getElementById("memory");
+gameOver=false;
 
+document.getElementById("endScreen").style.display="none";
+
+const memory=document.getElementById("memory");
 memory.innerHTML="";
 
 clearInterval(timer);
@@ -258,7 +284,7 @@ let baseTime=30;
 if(difficulty==="medium") baseTime=60;
 if(difficulty==="hard") baseTime=90;
 
-timeLeft=baseTime + (p*20);
+timeLeft=baseTime+(p*20);
 
 document.getElementById("timer").textContent=timeLeft;
 
@@ -271,8 +297,9 @@ document.getElementById("timer").textContent=timeLeft;
 if(timeLeft<=0){
 
 clearInterval(timer);
+gameOver=true;
 
-document.getElementById("message").textContent="⏰ Temps écoulé !";
+showEndScreen("⏰ Temps écoulé ! Partie perdue");
 
 }
 
@@ -282,7 +309,7 @@ document.getElementById("message").textContent="⏰ Temps écoulé !";
 
 function clickCard(card){
 
-if(lock||card.classList.contains("flipped")) return;
+if(gameOver||lock||card.classList.contains("flipped")) return;
 
 card.classList.add("flipped");
 
@@ -318,7 +345,6 @@ lock=false;
 if(matches===images.length){
 
 clearInterval(timer);
-
 showWinner();
 
 }
@@ -352,7 +378,7 @@ updateScoreboard();
 
 function updateScoreboard(){
 
-let html=`<p>Tour : <span id="playerTurn">${players[currentPlayer]}</span></p>`;
+let html=`<p>Tour : <span>${players[currentPlayer]}</span></p>`;
 
 players.forEach((p,i)=>{
 
@@ -366,8 +392,9 @@ document.getElementById("scoreboard").innerHTML=html;
 
 function showWinner(){
 
-let max=Math.max(...scores);
+gameOver=true;
 
+let max=Math.max(...scores);
 let winners=[];
 
 scores.forEach((s,i)=>{
@@ -376,7 +403,14 @@ if(s===max) winners.push(players[i]);
 
 });
 
-document.getElementById("message").textContent="🏆 Gagnant : "+winners.join(", ");
+showEndScreen("🏆 Gagnant : "+winners.join(", "));
+
+}
+
+function showEndScreen(text){
+
+document.getElementById("endMessage").textContent=text;
+document.getElementById("endScreen").style.display="flex";
 
 }
 
@@ -390,3 +424,4 @@ startGame();
 
 </body>
 </html>
+
