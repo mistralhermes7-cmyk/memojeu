@@ -73,21 +73,16 @@ font-weight:bold;
 cursor:pointer;
 }
 
-#scoreboard{
-margin-top:20px;
-font-size:18px;
-}
-
-#playerTurn{
-color:#00ffe0;
-font-weight:bold;
-}
-
 input,select{
 padding:8px;
 margin:5px;
 border-radius:6px;
 border:none;
+}
+
+#gameInfo{
+font-size:20px;
+margin-top:10px;
 }
 
 </style>
@@ -122,6 +117,11 @@ border:none;
 
 </div>
 
+<div id="gameInfo">
+⏱ Temps : <span id="timer">0</span> |
+🎯 Coups : <span id="moves">0</span>
+</div>
+
 <div id="scoreboard"></div>
 
 <div class="memory" id="memory"></div>
@@ -143,7 +143,6 @@ const allImages=[
 ];
 
 let images=[];
-
 let players=[];
 let scores=[];
 let currentPlayer=0;
@@ -152,6 +151,11 @@ let firstCard=null;
 let secondCard=null;
 let lock=false;
 let matches=0;
+
+let moves=0;
+
+let timer;
+let timeLeft=0;
 
 const playerCount=document.getElementById("playerCount");
 const nameInputs=document.getElementById("nameInputs");
@@ -182,15 +186,20 @@ const memory=document.getElementById("memory");
 
 memory.innerHTML="";
 
+clearInterval(timer);
+
 firstCard=null;
 secondCard=null;
 lock=false;
 matches=0;
+moves=0;
+
+document.getElementById("moves").textContent=moves;
 
 const difficulty=document.getElementById("difficulty").value;
 
 if(difficulty==="easy") images=allImages.slice(0,10);
-if(difficulty==="medium") images=allImages.slice(0,15);
+if(difficulty==="medium") images=allImages.slice(0,17);
 if(difficulty==="hard") images=allImages.slice(0,24);
 
 players=[];
@@ -211,6 +220,8 @@ currentPlayer=0;
 
 updateScoreboard();
 
+setupTimer();
+
 let cards=[...images,...images];
 
 cards.sort(()=>Math.random()-0.5);
@@ -224,7 +235,7 @@ card.innerHTML=`
 <div class="inner">
 <div class="front"></div>
 <div class="back">
-<img src="./MEMORY/${src}">
+<img src="MEMORY/${src}">
 </div>
 </div>
 `;
@@ -234,6 +245,38 @@ card.addEventListener("click",()=>clickCard(card));
 memory.appendChild(card);
 
 });
+
+}
+
+function setupTimer(){
+
+const difficulty=document.getElementById("difficulty").value;
+const p=playerCount.value;
+
+let baseTime=30;
+
+if(difficulty==="medium") baseTime=60;
+if(difficulty==="hard") baseTime=90;
+
+timeLeft=baseTime + (p*20);
+
+document.getElementById("timer").textContent=timeLeft;
+
+timer=setInterval(()=>{
+
+timeLeft--;
+
+document.getElementById("timer").textContent=timeLeft;
+
+if(timeLeft<=0){
+
+clearInterval(timer);
+
+document.getElementById("message").textContent="⏰ Temps écoulé !";
+
+}
+
+},1000);
 
 }
 
@@ -253,6 +296,9 @@ return;
 secondCard=card;
 lock=true;
 
+moves++;
+document.getElementById("moves").textContent=moves;
+
 let img1=firstCard.querySelector("img").src;
 let img2=secondCard.querySelector("img").src;
 
@@ -270,6 +316,8 @@ secondCard=null;
 lock=false;
 
 if(matches===images.length){
+
+clearInterval(timer);
 
 showWinner();
 
@@ -342,7 +390,3 @@ startGame();
 
 </body>
 </html>
-
-
-
-
