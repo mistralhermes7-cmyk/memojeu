@@ -104,6 +104,21 @@ z-index:10;
 font-size:20px;
 }
 
+/* MESSAGE MEME */
+
+#memeMessage{
+position:fixed;
+top:40%;
+left:50%;
+transform:translate(-50%,-50%);
+font-size:40px;
+font-weight:bold;
+color:#00ffe0;
+text-shadow:0 0 20px black;
+display:none;
+z-index:20;
+}
+
 </style>
 </head>
 
@@ -147,6 +162,8 @@ font-size:20px;
 
 <button onclick="restartGame()">Recommencer</button>
 
+<div id="memeMessage"></div>
+
 <div id="endScreen">
 <div id="endMessage"></div>
 <button onclick="restartGame()">Rejouer</button>
@@ -162,7 +179,7 @@ const allImages=[
 "simon2.jpg","elio.jpg","ethan2.jpg","moi.jpg"
 ];
 
-/* SONS ALEATOIRES */
+/* SONS */
 
 const sounds=[
 "SONS/son1.mp3",
@@ -179,11 +196,48 @@ const sounds=[
 ];
 
 function playRandomSound(){
-
 const random=Math.floor(Math.random()*sounds.length);
 const audio=new Audio(sounds[random]);
 audio.play();
+}
 
+/* MESSAGES MEMES */
+
+const successMessages=[
+"🔥 MASTERCLASS",
+"🧠 200 IQ PLAY",
+"💪 BIEN JOUE",
+"📈 PRO GAMER",
+"😎 SIGMA MOVE",
+"👑 ROI DU MEMORY",
+"⚡ SPEEDRUN"
+];
+
+const failMessages=[
+"💀 OULALA",
+"🤡 QUEL NIVEAU",
+"🧠 UTILISE TON CERVEAU",
+"📉 QI EN BAISSE",
+"👀 MEMOIRE DE POISSON",
+"😭 C'ETAIT JUSTE LA",
+"💤 REVEILLE TOI"
+];
+
+function showMeme(text){
+
+const box=document.getElementById("memeMessage");
+
+box.textContent=text;
+box.style.display="block";
+
+setTimeout(()=>{
+box.style.display="none";
+},2000);
+
+}
+
+function randomMessage(list){
+return list[Math.floor(Math.random()*list.length)];
 }
 
 let images=[];
@@ -336,10 +390,8 @@ if(gameOver||lock||card.classList.contains("flipped")) return;
 card.classList.add("flipped");
 
 if(!firstCard){
-
 firstCard=card;
 return;
-
 }
 
 secondCard=card;
@@ -354,6 +406,8 @@ let img2=secondCard.querySelector("img").src;
 if(img1===img2){
 
 playRandomSound();
+
+showMeme(randomMessage(successMessages));
 
 scores[currentPlayer]++;
 matches++;
@@ -372,6 +426,8 @@ showWinner();
 }
 
 }else{
+
+showMeme(randomMessage(failMessages));
 
 setTimeout(()=>{
 
@@ -437,13 +493,10 @@ document.getElementById("endScreen").style.display="flex";
 }
 
 function restartGame(){
-
 startGame();
-
 }
 
 </script>
 
 </body>
 </html>
-
