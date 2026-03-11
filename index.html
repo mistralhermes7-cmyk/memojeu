@@ -139,7 +139,7 @@ const allimages=[
 "akoan.jpg","cesar.jpg","ethan.jpg","kirk.png","marty.jpg",
 "jules.jpg","adrien.jpg","pal.png","aurel.jpg","nathan.jpg","flight.png","nathan2.jpg","alari2.jpg","marty2.jpg","simon.jpg","simon2.jpg","elio.jpg","ethan2.jpg","moi.jpg"
 ];
-
+  
 let images=[];
 
 let players=[];
@@ -176,6 +176,8 @@ createInputs();
 
 function startGame(){
 
+const memory=document.getElementById("memory");
+
 const difficulty=document.getElementById("difficulty").value;
 
 if(difficulty==="easy") images=allImages.slice(0,6);
@@ -201,7 +203,7 @@ matches=0;
 
 updateScoreboard();
 
-document.getElementById("memory").innerHTML="";
+memory.innerHTML="";
 document.getElementById("message").textContent="";
 
 let cards=[...images,...images];
